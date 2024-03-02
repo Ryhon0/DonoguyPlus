@@ -9,7 +9,7 @@ Donoguys Plus is a browser extension which adds additional features to the Donog
 * Overlay 
 ## Installation
 First, download the latest version of this extension from [the releases page](https://github.com/ryhon0/donoguysplus/releases).  
-In the "Assets" section, download the "Source code (zip)" file
+In the "Assets" section, download the "DonoguysPlus.zip" file anywhere
 ### Chromium based (Google Chrome/Brave/Opera)
 * Open the extensions page (3 horizontal lines > Extensions)
 * Drag and drop the downloaded .zip file
