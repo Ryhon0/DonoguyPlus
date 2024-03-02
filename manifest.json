@@ -1,0 +1,29 @@
+{
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "donoguysplus@ryhon.xyz"
+		}
+	},
+	"manifest_version": 2,
+	"name": "Donoguys Plus",
+	"description": "Improvements to donoguy editor.",
+	"homepage_url": "https://ryhon.xyz",
+	"version": "1.0",
+	"icons": {
+		"48": "icons/icon@48.png"
+	},
+	"content_scripts": [
+		{
+			"matches": [
+				"https://callmecarson.live/subs/donoguy"
+			],
+			"js": [
+				"inject.js"
+			],
+			"all_frames": true
+		}
+	],
+	"web_accessible_resources": [
+		"gdp.js"
+	]
+}
