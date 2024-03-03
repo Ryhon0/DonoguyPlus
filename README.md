@@ -8,7 +8,7 @@ Donoguys Plus is a browser extension which adds additional features to the Donog
 * Part position and scale can be entered manually
 * Overlay 
 ## Installation
-First, download the latest version of this extension from [the releases page](https://github.com/ryhon0/donoguysplus/releases).  
+First, download the latest version of this extension from [the releases page](https://github.com/Ryhon0/DonoguyPlus/releases/).  
 In the "Assets" section, download the "DonoguysPlus.zip" file anywhere
 ### Chromium based (Google Chrome/Brave/Opera)
 * Open the extensions page (3 horizontal lines > Extensions)
