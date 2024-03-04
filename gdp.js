@@ -68,7 +68,9 @@ function dgpMain() {
 					if (document.activeElement != input)
 						input.value = activeParts[part][0].options.position[0];
 				}
-				catch (e) { }
+				catch (e) {
+					input.value = 0;
+				}
 			}, 100);
 		}
 		// Position Y
@@ -90,7 +92,9 @@ function dgpMain() {
 					if (document.activeElement != input)
 						input.value = activeParts[part][0].options.position[1];
 				}
-				catch (e) { }
+				catch (e) {
+					input.value = 0;
+				}
 			}, 100);
 		}
 
@@ -116,7 +120,9 @@ function dgpMain() {
 					if (document.activeElement != input)
 						input.value = activeParts[part][0].options.scale;
 				}
-				catch (e) { }
+				catch (e) {
+					input.value = 0;
+				}
 			}, 100);
 		}
 	}
