@@ -109,9 +109,11 @@ function dgpMain() {
 
 			const input = document.createElement("input");
 			input.step = 0.05;
+			input.min = 0.2;
+			input.max = 1.8;
 			input.type = "number";
 			input.addEventListener("input", () => {
-				activeParts[part][0].options.scale = Number(input.value);
+				activeParts[part][0].options.scale = Math.max(0.2, Math.min(Number(input.value), 1.8));
 			});
 			page.insertBefore(input, label.nextSibling);
 
