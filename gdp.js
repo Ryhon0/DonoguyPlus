@@ -32,7 +32,15 @@ function dgpMain() {
 	guy.addEventListener("mousemove", (event) => {
 		if (!guy.matches(":hover")) return;
 		if (event.buttons & 1) {
-			movePartTest(targetCategory, (event.movementX / ctx.width) * 850, (event.movementY / ctx.height) * 850);
+			var movex = (event.movementX / ctx.width) * 850;
+			var movey = (event.movementY / ctx.height) * 850;
+
+			if(event.shiftKey)
+			{
+				for (p of ["heads", "mouths", "eyes", "noses", "hats", "accessories"])
+			 		movePartTest(p, movex, movey);
+			}
+			else movePartTest(targetCategory, movex, movey);
 			event.preventDefault();
 		}
 	});
@@ -52,7 +60,14 @@ function dgpMain() {
 	// Part scaling with mouse wheel
 	guy.addEventListener("wheel", (event) => {
 		if (event.deltaY != 0) {
-			scalePartTest(targetCategory, -event.deltaY / 120 * 0.05);
+			var scaleby = -event.deltaY / 120 * 0.05;
+
+			if(event.shiftKey)
+			{
+				for (p of ["heads", "mouths", "eyes", "noses", "hats", "accessories"])
+					scalePartTest(p, scaleby);
+			}
+			else scalePartTest(targetCategory, scaleby);
 			event.preventDefault();
 		}
 	});
