@@ -35,10 +35,9 @@ function dgpMain() {
 			var movex = (event.movementX / ctx.width) * 850;
 			var movey = (event.movementY / ctx.height) * 850;
 
-			if(event.shiftKey)
-			{
+			if (event.shiftKey) {
 				for (p of ["heads", "mouths", "eyes", "noses", "hats", "accessories"])
-			 		movePartTest(p, movex, movey);
+					movePartTest(p, movex, movey);
 			}
 			else movePartTest(targetCategory, movex, movey);
 			event.preventDefault();
@@ -46,14 +45,12 @@ function dgpMain() {
 	});
 	// Grab cursor
 	guy.style.cursor = "grab";
-	guy.addEventListener("mousedown", (event) => 
-	{
-		if(event.button != 0) return;
+	guy.addEventListener("mousedown", (event) => {
+		if (event.button != 0) return;
 		guy.style.cursor = "grabbing";
 	});
-	guy.addEventListener("mouseup", (event) => 
-	{
-		if(event.button != 0) return;
+	guy.addEventListener("mouseup", (event) => {
+		if (event.button != 0) return;
 		guy.style.cursor = "grab";
 	});
 
@@ -62,8 +59,7 @@ function dgpMain() {
 		if (event.deltaY != 0) {
 			var scaleby = -event.deltaY / 120 * 0.05;
 
-			if(event.shiftKey)
-			{
+			if (event.shiftKey) {
 				for (p of ["heads", "mouths", "eyes", "noses", "hats", "accessories"])
 					scalePartTest(p, scaleby);
 			}
@@ -176,6 +172,83 @@ function dgpMain() {
 		con.appendChild(check);
 
 		check.addEventListener("change", () => { dgpDrawOverlay = check.checked });
+	}
+
+	// JSON exporter
+	{
+		// To output
+		{
+			var jsonCodebox = document.createElement("textarea");
+			jsonCodebox.placeholder = "Generated JSON will be saved here";
+
+			var genButton = document.createElement("button");
+			genButton.innerText = "Generate JSON";
+			genButton.onclick = () => {
+				jsonCodebox.value = JSON.stringify(generateSaveBundle());
+			};
+			settingsList.appendChild(genButton);
+
+			var loadButton = document.createElement("button");
+			loadButton.innerText = "Load JSON";
+			loadButton.onclick = () => {
+				try {
+					window.lastSaved = JSON.parse(jsonCodebox.value);
+					completeLoading();
+				}
+				catch (e) {
+					console.error(e);
+					alert("Error while loading JSON:\n" + e);
+				}
+			};
+			settingsList.appendChild(loadButton);
+
+			settingsList.appendChild(document.createElement("br"));
+			settingsList.appendChild(jsonCodebox);
+			settingsList.appendChild(document.createElement("br"));
+		}
+
+		// File
+		{
+			var saveButton = document.createElement("button");
+			saveButton.innerText = "Save to file";
+			saveButton.onclick = () => {
+				var a = document.createElement("a");
+				var file = new Blob([JSON.stringify(generateSaveBundle())], { type: "application/json" });
+				a.href = URL.createObjectURL(file);
+				a.download = "download.donoguy";
+				a.click();
+			};
+			settingsList.appendChild(saveButton);
+
+			var loadButton = document.createElement("button");
+			loadButton.innerText = "Load from file";
+			loadButton.onclick = () => {
+				var fi = document.createElement("input");
+				fi.type = "file";
+				fi.accept = ".donoguy";
+				fi.addEventListener("change", () => {
+					if (fi.files.length != 1) return;
+
+					const fr = new FileReader();
+					fr.readAsText(fi.files[0])
+					fr.onload = function () {
+						try {
+							window.lastSaved = JSON.parse(fr.result);
+							completeLoading();
+						}
+						catch (e) {
+							console.error(e);
+							alert("Error while loading JSON:\n" + e);
+						}
+					};
+
+				});
+				fi.click();
+			};
+			settingsList.appendChild(loadButton);
+		}
+
+		settingsList.appendChild(document.createElement("br"));
 	}
 }
 
