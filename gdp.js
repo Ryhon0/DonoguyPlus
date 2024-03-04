@@ -40,7 +40,6 @@ function dgpMain() {
 	guy.style.cursor = "grab";
 	guy.addEventListener("mousedown", (event) => 
 	{
-		console.log(event);
 		if(event.button != 0) return;
 		guy.style.cursor = "grabbing";
 	});
