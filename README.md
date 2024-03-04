@@ -7,6 +7,7 @@ Donoguys Plus is a browser extension which adds additional features to the Donog
 * Parts can be scaled using scroll wheel
 * Holding Shift while moving or scaling affects all parts
 * Part position and scale can be entered manually
+* Donoguys can be saved and loaded from JSON
 * Overlay 
 ## Installation
 First, download the latest version of this extension from [the releases page](https://github.com/Ryhon0/DonoguyPlus/releases/).  
