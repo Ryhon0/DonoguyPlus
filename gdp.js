@@ -36,6 +36,20 @@ function dgpMain() {
 			event.preventDefault();
 		}
 	});
+	// Grab cursor
+	guy.style.cursor = "grab";
+	guy.addEventListener("mousedown", (event) => 
+	{
+		console.log(event);
+		if(event.button != 0) return;
+		guy.style.cursor = "grabbing";
+	});
+	guy.addEventListener("mouseup", (event) => 
+	{
+		if(event.button != 0) return;
+		guy.style.cursor = "grab";
+	});
+
 	// Part scaling with mouse wheel
 	guy.addEventListener("wheel", (event) => {
 		if (event.deltaY != 0) {
