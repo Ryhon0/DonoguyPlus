@@ -27,8 +27,69 @@ function dgpMain() {
 	window.ogDraw = window.draw;
 	window.draw = newDraw;
 
-	// Part dragging
 	var guy = document.getElementById("guy");
+	// Part picking
+	guy.addEventListener("mousedown", (event) => {
+		if (event.button != 0) return;
+
+		var canvasRect = guy.getBoundingClientRect();
+
+		var x = event.x - canvasRect.x;
+		var y = event.y - canvasRect.y;
+		if (canvasRect.width > canvasRect.height) {
+			x -= (canvasRect.width - canvasRect.height) / 2;
+		} else {
+			y -= (canvasRect.height - canvasRect.width) / 2;
+		}
+
+		var p;
+		for (pk in partLayerBBoxes) {
+			for (pl in partLayerBBoxes[pk]) {
+				var bb = partLayerBBoxes[pk][pl];
+				if (bb[2] == 0 || bb[3] == 0) continue;
+
+				// Check bounding box
+				if (x > bb[0] && y > bb[1] && x < (bb[0] + bb[2]) && y < (bb[1] + bb[3])) {
+					function getPixel(img, x, y) {
+						var canvas = document.createElement('canvas');
+						canvas.width = img.width;
+						canvas.height = img.height;
+						var context = canvas.getContext('2d');
+						context.drawImage(img, 0, 0);
+						return context.getImageData(x, y, 1, 1).data;
+					}
+
+					var tex;
+					var partid = activeParts[pk][0].id;
+					if (!guyDefinitions.parts[pk][partid].layers) {
+						texturePath = guyDefinitions.parts[pk][partid].texture;
+						tex = guyDefinitions.textures[texturePath];
+					}
+					else {
+						for (i in guyDefinitions.parts[pk][partid].layers) {
+							texturePath = guyDefinitions.parts[pk][partid].layers[i].texture;
+							tex = guyDefinitions.textures[texturePath];
+						}
+					}
+
+					var u = Math.round((x - bb[0]) / bb[2] * tex.width);
+					var v = Math.round((y - bb[1]) / bb[3] * tex.height);
+
+					var px = getPixel(tex, u, v);
+					if (px[3] > 25)
+						p = pk;
+				}
+			}
+			if (p) break;
+		}
+
+		if (p) {
+			targetCategory = p;
+			document.getElementById("tab-" + targetCategory).click();
+		}
+	});
+
+	// Part dragging
 	guy.addEventListener("mousemove", (event) => {
 		if (!guy.matches(":hover")) return;
 		if (event.buttons & 1) {
@@ -44,14 +105,13 @@ function dgpMain() {
 		}
 	});
 	// Grab cursor
-	guy.style.cursor = "grab";
 	guy.addEventListener("mousedown", (event) => {
 		if (event.button != 0) return;
 		guy.style.cursor = "grabbing";
 	});
 	guy.addEventListener("mouseup", (event) => {
 		if (event.button != 0) return;
-		guy.style.cursor = "grab";
+		guy.style.cursor = "default";
 	});
 
 	// Part scaling with mouse wheel
@@ -160,18 +220,35 @@ function dgpMain() {
 		con.classList.add("editor-control");
 		settingsList.appendChild(con);
 
-		var label = document.createElement("label");
-		label.innerText = "Draw Donoguys Plus overlay";
-		label.setAttribute("for", "dgpOverlayCheck");
-		con.appendChild(label);
+		{
+			var overlayLabel = document.createElement("label");
+			overlayLabel.innerText = "Draw Donoguys Plus overlay";
+			overlayLabel.setAttribute("for", "dgpOverlayCheck");
+			con.appendChild(overlayLabel);
 
-		var check = document.createElement("input");
-		check.id = "dgpOverlayCheck";
-		check.setAttribute("type", "checkbox");
-		check.checked = dgpDrawOverlay;
-		con.appendChild(check);
+			var overlayCheck = document.createElement("input");
+			overlayCheck.id = "dgpOverlayCheck";
+			overlayCheck.setAttribute("type", "checkbox");
+			overlayCheck.checked = dgpDrawOverlay;
+			overlayCheck.addEventListener("change", () => { dgpDrawOverlay = overlayCheck.checked });
+			con.appendChild(overlayCheck);
+			con.appendChild(document.createElement("br"));
+		}
 
-		check.addEventListener("change", () => { dgpDrawOverlay = check.checked });
+		{
+			var bboxLabel = document.createElement("label");
+			bboxLabel.innerText = "Draw layer bounding boxes";
+			bboxLabel.setAttribute("for", "dgpBboxCheck");
+			con.appendChild(bboxLabel);
+
+			var bboxCheck = document.createElement("input");
+			bboxCheck.id = "dgpBboxCheck";
+			bboxCheck.setAttribute("type", "checkbox");
+			bboxCheck.checked = dgpDrawOverlay;
+			bboxCheck.addEventListener("change", () => { dgpDrawBbox = bboxCheck.checked });
+			con.appendChild(bboxCheck);
+			con.appendChild(document.createElement("br"));
+		}
 	}
 
 	// JSON exporter
@@ -253,6 +330,9 @@ function dgpMain() {
 }
 
 var dgpDrawOverlay = true;
+var dgpDrawBbox = false;
+var partLayerBBoxes = {}
+
 function newDraw() {
 	ctx.clearRect(0, 0, ctx.width, ctx.height);
 
@@ -293,6 +373,63 @@ function newDraw() {
 		var lines = line.split('\n');
 		for (var i = 0; i < lines.length; i++)
 			ctx.fillText(lines[i], 8, ((i + 1) * lineheight));
+	}
+
+	// Calculate bounding boxes
+	for (pkey of ["heads", "mouths", "eyes", "noses", "accessories", "hats"]) {
+		var canvasClientWidth = ctx.canvas.clientWidth;
+		var canvasClientHeight = ctx.canvas.clientHeight;
+		var squareSize = Math.min(canvasClientHeight, canvasClientWidth);
+
+		// Calculate layer bounding boxes for alpha test
+		var p = activeParts[pkey][0];
+		partLayerBBoxes[pkey] = [];
+		if (p && p.options) {
+			var x = p.options.position[0] || 0;
+			var y = p.options.position[1] || 0;
+			x *= guyScale;
+			y *= guyScale;
+			x += squareSize / 2;
+			y += squareSize / 2;
+			var scale = p.options.scale || 1;
+			scale *= guyScale;
+
+			if (!guyDefinitions.parts[pkey][p.id].layers) {
+				var texturePath = guyDefinitions.parts[pkey][p.id].texture;
+				var tex = guyDefinitions.textures[texturePath];
+
+				var lw = tex.width * scale;
+				var lh = tex.height * scale;
+				var lx = x - (lw / 2);
+				var ly = y - (lh / 2);
+
+				partLayerBBoxes[pkey][0] = [lx, ly, lw, lh];
+			}
+			else {
+				for (i in guyDefinitions.parts[pkey][p.id].layers) {
+					var texturePath = guyDefinitions.parts[pkey][p.id].layers[i].texture;
+					var tex = guyDefinitions.textures[texturePath];
+
+					var lw = tex.width * scale;
+					var lh = tex.height * scale;
+					var lx = x - (lw / 2);
+					var ly = y - (lh / 2);
+
+					partLayerBBoxes[pkey][i] = [lx, ly, lw, lh];
+				}
+			}
+
+		}
+	}
+
+	if (dgpDrawBbox) {
+		for (pk in partLayerBBoxes) {
+			ctx.strokeStyle = pk == targetCategory ? 'lime' : 'red';
+			for (pl in partLayerBBoxes[pk]) {
+				var bb = partLayerBBoxes[pk][pl];
+				ctx.strokeRect(bb[0], bb[1], bb[2], bb[3]);
+			}
+		}
 	}
 
 	requestAnimationFrame(newDraw);
