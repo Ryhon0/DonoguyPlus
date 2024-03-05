@@ -246,7 +246,7 @@ function dgpMain() {
 			var bboxCheck = document.createElement("input");
 			bboxCheck.id = "dgpBboxCheck";
 			bboxCheck.setAttribute("type", "checkbox");
-			bboxCheck.checked = dgpDrawOverlay;
+			bboxCheck.checked = dgpDrawBbox;
 			bboxCheck.addEventListener("change", () => { dgpDrawBbox = bboxCheck.checked });
 			con.appendChild(bboxCheck);
 			con.appendChild(document.createElement("br"));
