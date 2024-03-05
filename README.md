@@ -3,8 +3,6 @@
 # Donoguys Plus
 Donoguys Plus is a browser extension which adds additional features to the Donoguy Maker.  
 ## Features
-* Parts can be moved using mouse
-* Parts can be scaled using scroll wheel
 * Holding Shift while moving or scaling affects all parts
 * Part position and scale can be entered manually
 * Donoguys can be saved and loaded from JSON
