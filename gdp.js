@@ -98,7 +98,7 @@ function dgpMain() {
 
 			if (event.shiftKey) {
 				for (p of ["heads", "mouths", "eyes", "noses", "hats", "accessories"])
-					if(p != targetCategory)
+					if (p != targetCategory)
 						movePartTest(p, movex, movey);
 			}
 			event.preventDefault();
@@ -116,12 +116,12 @@ function dgpMain() {
 
 	// Part scaling with mouse wheel
 	guy.addEventListener("wheel", (event) => {
-		if (event.deltaY != 0) {
+		if (event.buttons & 1 && event.deltaY != 0) {
 			var scaleby = -event.deltaY * 0.0005;
 
 			if (event.shiftKey) {
 				for (p of ["heads", "mouths", "eyes", "noses", "hats", "accessories"])
-					if(p != targetCategory)
+					if (p != targetCategory)
 						scalePartTest(p, scaleby);
 			}
 			event.preventDefault();
