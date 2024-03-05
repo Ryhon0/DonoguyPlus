@@ -43,7 +43,9 @@ function dgpMain() {
 		}
 
 		var p;
-		for (pk in partLayerBBoxes) {
+		var order = ["hats", "accessories", "noses", "eyes", "mouths", "heads"]
+		for (i in order) {
+			var pk = order[i];
 			for (pl in partLayerBBoxes[pk]) {
 				var bb = partLayerBBoxes[pk][pl];
 				if (bb[2] == 0 || bb[3] == 0) continue;
