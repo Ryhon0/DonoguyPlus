@@ -334,7 +334,20 @@ var dgpDrawBbox = false;
 var partLayerBBoxes = {}
 
 function newDraw() {
-	ctx.clearRect(0, 0, ctx.width, ctx.height);
+	// Define position and scale if doesn't exist
+	// Selecting some parts doesn't set the position and scale
+	for (pkey of ["heads", "mouths", "eyes", "noses", "accessories", "hats"]) {
+		for (p of activeParts[pkey]) {
+			if (!p.options)
+				p.options = {};
+
+			if (p.options.scale == undefined)
+				p.options.scale = 0;
+
+			if (!p.options.position)
+				p.options.position = [0, 0];
+		}
+	}
 
 	var r = requestAnimationFrame;
 	requestAnimationFrame = (x) => { };
@@ -348,14 +361,10 @@ function newDraw() {
 		if (targetCategory in activeParts) {
 			if (activeParts[targetCategory].length != 0) {
 				var op = activeParts[targetCategory][0].options;
-				if (op) {
-					if ("position" in op) {
-						line += "x: " + Math.round(op.position[0] * 100) / 100 + "\n";
-						line += "y: " + Math.round(op.position[1] * 100) / 100 + "\n";
-					}
-					if ("scale" in op)
-						line += "scale: " + Math.round(op.scale * 100) / 100 + "\n";
-				}
+
+				line += "x: " + Math.round(op.position[0] * 100) / 100 + "\n";
+				line += "y: " + Math.round(op.position[1] * 100) / 100 + "\n";
+				line += "scale: " + Math.round(op.scale * 100) / 100 + "\n";
 
 				if (targetCategory == "heads") {
 					line += "color: " + hslToHexStr(activeColors["head"]) + "\n";
